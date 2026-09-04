@@ -27,19 +27,34 @@
   <h1>ShallGuard</h1>
   <p class="tag">Code got cheap. Trust did not.</p>
 
-  <p>ShallGuard is a tool for Rust projects. It keeps a written list of what
-  the software must do. It connects each requirement to the code that makes
-  it true and to the test that proves it. If a link breaks, the build
-  fails.</p>
+  <p>ShallGuard keeps a written list of what the software must do. It
+  connects each requirement to the code that makes it true and to the test
+  that proves it. If a link breaks, the build fails.</p>
 
   <p>The check needs no network and no language model. It gives the same
   result each time. A coding agent can write the code, but a person owns the
   requirements.</p>
 
-  <h2>Install</h2>
+  <p>ShallGuard has one implementation today, for Rust. A specification
+  defines the parts that every future implementation shares.</p>
+
+  <h2>Specification and discussion</h2>
+  <ul>
+    <li><a href="https://github.com/shallguard/spec">Specification repository</a>:
+    the interchange format, the contributing guide, the writing rules, and
+    the glossary.</li>
+    <li><a href="https://github.com/shallguard/spec/discussions">Discussions</a>:
+    ask a question, propose an idea, or reply to an open decision of the
+    specification.</li>
+  </ul>
+
+  <h2>Rust implementation</h2>
+
+  <p>Install the command:</p>
   <pre><code>cargo install cargo-shallguard --locked</code></pre>
 
-  <h2>Use</h2>
+  <p>Run the checks in a repository that has a <code>shallguard.toml</code>
+  file:</p>
   <pre><code>cargo shallguard fmt --check   # requirement-document format
 cargo shallguard check         # traceability gate</code></pre>
 
@@ -53,7 +68,7 @@ cargo shallguard check         # traceability gate</code></pre>
   </ul>
 
   <footer>ShallGuard is open source under the MIT License.
-  Source: <a href="https://github.com/shallguard/shallguard-rs">github.com/shallguard/shallguard-rs</a></footer>
+  Source: <a href="https://github.com/shallguard">github.com/shallguard</a></footer>
 </main>
 </body>
 </html>
