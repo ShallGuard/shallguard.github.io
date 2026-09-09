@@ -206,9 +206,11 @@ fn rejects_expired_token() { … }</pre>
     CI stays green — until the check runs:</p>
     <div class="term">
       <pre><span class="cm">$</span> cargo shallguard check
-<span class="fail">error[verification-anchor]</span>: REQ-AUTH-003 cites test
-  <span class="del">rejects_expired_token</span>, but no such test exists
-check failed: 1 gap · 1 requirement checked</pre>
+<span class="cm">…</span>
+<span class="fail">errors (2):</span>
+  docs/requirements.md:
+        4  <span class="fail">[hard-area verification-anchor]</span> REQ-AUTH-003 "The session store SHALL reject an expired token." - claims automated-test evidence but no test anchor verifies it
+        4  <span class="fail">[hard-area evidence-citation]</span> REQ-AUTH-003 - cited evidence tests/session.rs (<span class="del">rejects_expired_token</span>) does not resolve to a #[shallguard::verifies] anchor for this requirement</pre>
     </div>
     <p class="caption">The same happens when somebody weakens the assertion,
     removes the anchor, or edits the requirement away. A person or an agent
@@ -227,7 +229,7 @@ check failed: 1 gap · 1 requirement checked</pre>
   contract.</p>
   <p>You do not need to describe your whole system. Start with the few rules
   you are afraid to lose — one SHALL sentence each.
-  <a href="why.html">Read the full argument.</a></p>
+  <a href="https://github.com/shallguard/spec/blob/master/WHY.md">Read the full argument.</a></p>
 </section>
 
 <section class="clause" id="start">
