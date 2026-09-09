@@ -3,117 +3,275 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ShallGuard</title>
-<meta name="description" content="ShallGuard connects written requirements to the Rust code that makes them true and to the tests that prove them. If a link breaks, the build fails.">
+<title>ShallGuard — requirements that the build enforces</title>
+<meta name="description" content="ShallGuard connects written requirements to the code that makes them true and to the tests that prove them. If a link breaks, the build fails.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root { color-scheme: light dark; --fg: #1a1a1a; --bg: #fbfaf7; --muted: #5c5c5c; --accent: #0b5fa5; --code: #efede8; }
-  @media (prefers-color-scheme: dark) { :root { --fg: #ececec; --bg: #14161a; --muted: #a8a8a8; --accent: #7fb3ec; --code: #22262c; } }
-  body { margin: 0; font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
-  main { max-width: 42rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
-  h1 { font-size: 2.4rem; margin: 0 0 .25rem; letter-spacing: -.01em; }
-  .tag { color: var(--muted); margin: 0 0 2rem; font-size: 1.1rem; }
-  h2 { font-size: 1.25rem; margin: 2.25rem 0 .5rem; }
-  p { margin: 0 0 1rem; }
-  ul { padding-left: 1.25rem; }
-  li { margin: .35rem 0; }
-  .claim { font-size: 1.15rem; font-weight: 600; border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1.5rem 0; }
-  a { color: var(--accent); }
-  pre { background: var(--code); padding: .9rem 1rem; border-radius: 6px; overflow-x: auto; font-size: .95rem; }
-  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-  footer { margin-top: 3rem; color: var(--muted); font-size: .9rem; }
+  :root {
+    --paper: #f6f7f6;
+    --ink: #191d19;
+    --muted: #5a615a;
+    --rule: #d8dcd8;
+    --panel: #ffffff;
+    --panel-edge: #c9cfc9;
+    --pass: #1e6b45;
+    --fail: #a8342b;
+    --fail-bg: #faf1f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #131613;
+      --ink: #e7ebe7;
+      --muted: #9aa39a;
+      --rule: #2a302a;
+      --panel: #1a1e1a;
+      --panel-edge: #343b34;
+      --pass: #6fbf92;
+      --fail: #e08078;
+      --fail-bg: #251a19;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 17px/1.55 "IBM Plex Sans", system-ui, sans-serif;
+  }
+  a { color: inherit; text-decoration-color: var(--pass); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  a:hover { color: var(--pass); }
+  a:focus-visible, .cta:focus-visible { outline: 2px solid var(--pass); outline-offset: 3px; }
+  code, pre, .mono { font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace; }
+
+  .page { max-width: 46rem; margin: 0 auto; padding: 0 1.25rem 5rem; }
+  header.top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 1.4rem 0 0;
+  }
+  .wordmark { font-weight: 600; font-size: 1.05rem; letter-spacing: .01em; }
+  .top a { font-size: .95rem; text-decoration: none; border-bottom: 1.5px solid var(--pass); }
+
+  /* Hero */
+  .hero { padding: 3.2rem 0 1.2rem; }
+  h1 {
+    font-size: clamp(1.9rem, 5vw, 2.6rem);
+    line-height: 1.15; letter-spacing: -.015em;
+    margin: 0 0 .9rem; font-weight: 600; max-width: 34rem;
+  }
+  .lede { font-size: 1.1rem; max-width: 36rem; margin: 0 0 1.6rem; color: var(--muted); }
+  .ctas { display: flex; gap: .75rem; flex-wrap: wrap; align-items: center; margin-bottom: .4rem; }
+  .cta {
+    display: inline-block; text-decoration: none;
+    border: 1.5px solid var(--ink); padding: .55rem 1rem;
+    font-weight: 600; font-size: .95rem; background: var(--panel);
+  }
+  .cta.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .cta.primary:hover { background: var(--pass); border-color: var(--pass); color: #fff; }
+  .cta:hover { border-color: var(--pass); color: var(--pass); }
+
+  /* Linked triptych — the one bold element */
+  .demo { margin: 2.6rem 0 0; }
+  .filecard {
+    background: var(--panel);
+    border: 1px solid var(--panel-edge);
+    border-radius: 4px;
+  }
+  .filecard .name {
+    font-size: .78rem; color: var(--muted);
+    padding: .45rem .9rem; border-bottom: 1px solid var(--rule);
+  }
+  .filecard pre { margin: 0; padding: .8rem .9rem; overflow-x: auto; font-size: .84rem; line-height: 1.55; }
+  .kw { color: var(--pass); font-weight: 500; }
+  .cm { color: var(--muted); }
+  .req-id { font-weight: 500; }
+
+  .links-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.4rem;
+    margin-top: 0;
+  }
+  .connector {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.4rem;
+    height: 2.4rem;
+  }
+  .connector span {
+    position: relative;
+    font-size: .78rem; color: var(--pass); font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .connector span::before, .connector span::after {
+    content: ""; position: absolute; left: 50%; width: 1.5px;
+    background: var(--pass); height: .55rem;
+  }
+  .connector span::before { top: -1px; }
+  .connector span::after { bottom: -1px; }
+
+  .caption { font-size: .9rem; color: var(--muted); margin: 1.1rem 0 0; max-width: 36rem; }
+
+  /* Fail terminal */
+  .break { margin: 2.4rem 0 0; }
+  .break p.setup { margin: 0 0 .8rem; font-weight: 600; }
+  .term {
+    background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 4px;
+    border-left: 3px solid var(--fail);
+  }
+  .term pre { margin: 0; padding: .85rem 1rem; font-size: .84rem; line-height: 1.6; overflow-x: auto; }
+  .fail { color: var(--fail); font-weight: 500; }
+  .del { color: var(--fail); background: var(--fail-bg); text-decoration: line-through; }
+
+  /* Sections as spec clauses */
+  section.clause { border-top: 1px solid var(--rule); margin-top: 3.2rem; padding-top: 1.6rem; }
+  .clause h2 { font-size: 1.15rem; margin: 0 0 .9rem; font-weight: 600; }
+  .clause h2 .n { font-family: "IBM Plex Mono", monospace; font-weight: 400; color: var(--muted); margin-right: .8rem; font-size: 1rem; }
+  .clause p { margin: 0 0 .9rem; max-width: 38rem; }
+  .pull {
+    border-left: 3px solid var(--pass); padding: .15rem 0 .15rem 1rem;
+    margin: 1.3rem 0; font-weight: 600; max-width: 36rem;
+  }
+  .clause pre.cmd {
+    background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 4px;
+    padding: .8rem 1rem; font-size: .88rem; overflow-x: auto; max-width: 38rem;
+  }
+  .facts { margin: 0; padding-left: 1.1rem; max-width: 38rem; }
+  .facts li { margin: .45rem 0; }
+  .note { font-size: .9rem; color: var(--muted); }
+
+  footer {
+    border-top: 1px solid var(--rule); margin-top: 3.2rem; padding-top: 1.4rem;
+    font-size: .92rem; color: var(--muted);
+  }
+  footer nav { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; margin-bottom: 1rem; }
+  footer a { text-decoration: none; border-bottom: 1.5px solid var(--pass); }
+
+  @media (max-width: 40rem) {
+    .links-row, .connector { grid-template-columns: 1fr; }
+    .connector { height: auto; padding: .15rem 0; }
+    .connector span { justify-content: flex-start; padding: .3rem 0 .3rem .9rem; }
+    .connector span::before, .connector span::after { left: .2rem; }
+    .links-row .filecard + .filecard { margin-top: 0; }
+    .connector span.second { display: none; }
+    .links-row { gap: 0; }
+    .filecard.test { margin-top: .9rem; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <h1>ShallGuard</h1>
-  <p class="tag">Code got cheap. Trust did not.</p>
+<div class="page">
 
-  <p>ShallGuard keeps a written list of what the software must do. It
-  connects each requirement to the code that makes it true and to the test
-  that proves it. If a link breaks, the build fails.</p>
+<header class="top">
+  <span class="wordmark mono">ShallGuard</span>
+  <a href="https://github.com/shallguard">GitHub</a>
+</header>
 
-  <p>The check needs no network and no language model. It gives the same
-  result each time. A coding agent can write the code, but a person owns the
-  requirements.</p>
+<section class="hero">
+  <h1>Write the rule once. The build enforces it forever.</h1>
+  <p class="lede">ShallGuard links each written requirement to the code that
+  makes it true and to the test that proves it. If a link breaks, the check
+  fails — deterministic, offline, no language model.</p>
+  <div class="ctas">
+    <a class="cta primary" href="#start">Install for Rust</a>
+    <a class="cta" href="https://github.com/shallguard/spec">Read the specification</a>
+  </div>
 
-  <p>ShallGuard has one implementation today, for Rust. A specification
-  defines the parts that every future implementation shares.</p>
+  <div class="demo" aria-label="How a requirement links to code and to a test">
+    <div class="filecard">
+      <div class="name mono">docs/requirements.md</div>
+      <pre><span class="req-id">REQ-AUTH-003</span> — The session store <span class="kw">SHALL</span> reject an expired token.
+<span class="cm">*Enforced:* src/session.rs (create) · *Verified:* [test] rejects_expired_token</span></pre>
+    </div>
+    <div class="connector">
+      <span>enforced by</span>
+      <span class="second">verified by</span>
+    </div>
+    <div class="links-row">
+      <div class="filecard">
+        <div class="name mono">src/session.rs</div>
+        <pre><span class="kw">#[shallguard::enforces(</span>"REQ-AUTH-003"<span class="kw">)]</span>
+fn create(&amp;self, token: Token) { … }</pre>
+      </div>
+      <div class="filecard test">
+        <div class="name mono">tests/session.rs</div>
+        <pre><span class="kw">#[shallguard::verifies(</span>"REQ-AUTH-003"<span class="kw">)]</span>
+#[test]
+fn rejects_expired_token() { … }</pre>
+      </div>
+    </div>
+    <p class="caption">Three files, one contract. The requirement document, the
+    code, and the test each point at the same ID.</p>
+  </div>
 
-  <h2 id="why">Why write requirements</h2>
+  <div class="break">
+    <p class="setup">An agent deletes the test. Every unit test still passes.
+    CI stays green — until the check runs:</p>
+    <div class="term">
+      <pre><span class="cm">$</span> cargo shallguard check
+<span class="fail">error[verification-anchor]</span>: REQ-AUTH-003 cites test
+  <span class="del">rejects_expired_token</span>, but no such test exists
+check failed: 1 gap · 1 requirement checked</pre>
+    </div>
+    <p class="caption">The same happens when somebody weakens the assertion,
+    removes the anchor, or edits the requirement away. A person or an agent
+    can change anything — but not in silence.</p>
+  </div>
+</section>
 
-  <p>Developers do not like to write requirements. The reason is simple.
-  The developer pays the cost now. The benefit comes later, and it comes to
-  somebody else: an auditor, a reviewer, a future maintainer. So most teams
-  skip the work, or they write vague documents after the code is done.</p>
-
-  <p>Coding agents change this.</p>
-
+<section class="clause" id="why">
+  <h2><span class="n">1</span>Why write requirements now</h2>
   <p>When a person wrote the code, a requirement was a document about the
-  work. Now an agent writes the code, and the requirement is the work. The
-  requirement is the most important artifact a person produces. It tells the
-  agent what to build. It tells the reviewer what to check. It tells the next
+  work. Now an agent writes the code — and the requirement is the work. It
+  tells the agent what to build, the reviewer what to check, and the next
   agent what it must not break.</p>
-
-  <p>A prompt does the same job, one time. Then the chat ends and the intent
-  is gone. A requirement with an anchor does the job every day. The check
-  runs on every change, forever.</p>
-
-  <p class="claim">A specification that you throw away after the code is
+  <p class="pull">A specification that you throw away after the code is
   generated is a prompt. A specification that a tool enforces forever is a
   contract.</p>
-
-  <p>ShallGuard is the difference between these two sentences.</p>
-
   <p>You do not need to describe your whole system. Start with the few rules
-  that you are afraid to lose. Write one SHALL sentence for each rule. Anchor
-  it to the code and to the test. From that moment, no change breaks the rule
-  in silence. Not a change from a person, and not a change from an agent.</p>
+  you are afraid to lose — one SHALL sentence each.
+  <a href="why.html">Read the full argument.</a></p>
+</section>
 
-  <p>The requirement then starts to pay you back:</p>
-  <ul>
-    <li>The agent follows a written contract, not a memory of a chat.</li>
-    <li>The reviewer sees which contracts a change touches, and which tests
-    prove that the contracts still hold.</li>
-    <li>A new team member reads the requirement document and understands
-    what the system promises.</li>
-    <li>When something breaks in production, the requirement tells you what
-    rule broke, and where the code for that rule is.</li>
+<section class="clause" id="start">
+  <h2><span class="n">2</span>Start in five minutes</h2>
+  <pre class="cmd">cargo install cargo-shallguard --locked
+
+cargo shallguard fmt --check   <span class="cm"># requirement-document format</span>
+cargo shallguard check         <span class="cm"># the traceability gate</span></pre>
+  <p>Rust today; the <a href="https://github.com/shallguard/spec">specification</a>
+  defines what every future language implementation shares. An existing
+  codebase adopts gradually: the baseline records historical gaps once and
+  only ever shrinks.</p>
+</section>
+
+<section class="clause" id="proven">
+  <h2><span class="n">3</span>Proven on one real workspace</h2>
+  <ul class="facts">
+    <li>535 requirements across 16 areas and 3 crates, migrated in two days
+    with an agent in the loop.</li>
+    <li>576 initial warnings ratcheted down to an empty baseline; every area
+    now rejects new debt.</li>
+    <li>The migration found defects that a green test suite had hidden: an
+    authorization test that could not fail, an end-to-end test without its
+    core component, and mocks without assertions.</li>
   </ul>
+  <p class="note">The workspace belongs to the author — read the numbers as a
+  best case, not an independent benchmark.
+  <a href="https://github.com/shallguard/shallguard-rs/blob/master/docs/MIGRATION.md">Full
+  case study.</a></p>
+</section>
 
-  <p>Write down what must stay true. The tool keeps it true.</p>
+<footer>
+  <nav>
+    <a href="https://github.com/shallguard/shallguard-rs">README &amp; quick start</a>
+    <a href="https://github.com/shallguard/shallguard-rs/blob/master/docs/USER_DOC.md">User guide</a>
+    <a href="https://github.com/shallguard/shallguard-rs/blob/master/docs/MIGRATION.md">Migration guide</a>
+    <a href="https://github.com/shallguard/shallguard-rs/tree/master/docs/skill">Skill for coding agents</a>
+    <a href="https://github.com/orgs/shallguard/discussions">Discussions</a>
+    <a href="https://crates.io/crates/cargo-shallguard">crates.io</a>
+  </nav>
+  <p>Open source under the MIT License. The deterministic check is free and
+  stays free.</p>
+</footer>
 
-  <h2>Specification and discussion</h2>
-  <ul>
-    <li><a href="https://github.com/shallguard/spec">Specification repository</a>:
-    the interchange format, the contributing guide, the writing rules, and
-    the glossary.</li>
-    <li><a href="https://github.com/shallguard/spec/discussions">Discussions</a>:
-    ask a question, propose an idea, or reply to an open decision of the
-    specification.</li>
-  </ul>
-
-  <h2>Rust implementation</h2>
-
-  <p>Install the command:</p>
-  <pre><code>cargo install cargo-shallguard --locked</code></pre>
-
-  <p>Run the checks in a repository that has a <code>shallguard.toml</code>
-  file:</p>
-  <pre><code>cargo shallguard fmt --check   # requirement-document format
-cargo shallguard check         # traceability gate</code></pre>
-
-  <h2>Read more</h2>
-  <ul>
-    <li><a href="https://github.com/shallguard/spec/blob/master/WHY.md">Why write requirements</a>: the page that the section above comes from</li>
-    <li><a href="https://github.com/shallguard/shallguard-rs#readme">README and quick start</a></li>
-    <li><a href="https://github.com/shallguard/shallguard-rs/blob/master/docs/USER_DOC.md">User guide</a></li>
-    <li><a href="https://github.com/shallguard/shallguard-rs/blob/master/docs/MIGRATION.md">Migration guide for an existing codebase</a></li>
-    <li><a href="https://github.com/shallguard/shallguard-rs/blob/master/docs/skill/SKILL.md">Skill for coding agents</a></li>
-    <li><a href="https://crates.io/crates/cargo-shallguard">cargo-shallguard on crates.io</a></li>
-  </ul>
-
-  <footer>ShallGuard is open source under the MIT License.
-  Source: <a href="https://github.com/shallguard">github.com/shallguard</a></footer>
-</main>
+</div>
 </body>
 </html>
