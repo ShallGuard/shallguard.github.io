@@ -16,6 +16,7 @@
   p { margin: 0 0 1rem; }
   ul { padding-left: 1.25rem; }
   li { margin: .35rem 0; }
+  .claim { font-size: 1.15rem; font-weight: 600; border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1.5rem 0; }
   a { color: var(--accent); }
   pre { background: var(--code); padding: .9rem 1rem; border-radius: 6px; overflow-x: auto; font-size: .95rem; }
   code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
@@ -37,6 +38,49 @@
 
   <p>ShallGuard has one implementation today, for Rust. A specification
   defines the parts that every future implementation shares.</p>
+
+  <h2 id="why">Why write requirements</h2>
+
+  <p>Developers do not like to write requirements. The reason is simple.
+  The developer pays the cost now. The benefit comes later, and it comes to
+  somebody else: an auditor, a reviewer, a future maintainer. So most teams
+  skip the work, or they write vague documents after the code is done.</p>
+
+  <p>Coding agents change this.</p>
+
+  <p>When a person wrote the code, a requirement was a document about the
+  work. Now an agent writes the code, and the requirement is the work. The
+  requirement is the most important artifact a person produces. It tells the
+  agent what to build. It tells the reviewer what to check. It tells the next
+  agent what it must not break.</p>
+
+  <p>A prompt does the same job, one time. Then the chat ends and the intent
+  is gone. A requirement with an anchor does the job every day. The check
+  runs on every change, forever.</p>
+
+  <p class="claim">A specification that you throw away after the code is
+  generated is a prompt. A specification that a tool enforces forever is a
+  contract.</p>
+
+  <p>ShallGuard is the difference between these two sentences.</p>
+
+  <p>You do not need to describe your whole system. Start with the few rules
+  that you are afraid to lose. Write one SHALL sentence for each rule. Anchor
+  it to the code and to the test. From that moment, no change breaks the rule
+  in silence. Not a change from a person, and not a change from an agent.</p>
+
+  <p>The requirement then starts to pay you back:</p>
+  <ul>
+    <li>The agent follows a written contract, not a memory of a chat.</li>
+    <li>The reviewer sees which contracts a change touches, and which tests
+    prove that the contracts still hold.</li>
+    <li>A new team member reads the requirement document and understands
+    what the system promises.</li>
+    <li>When something breaks in production, the requirement tells you what
+    rule broke, and where the code for that rule is.</li>
+  </ul>
+
+  <p>Write down what must stay true. The tool keeps it true.</p>
 
   <h2>Specification and discussion</h2>
   <ul>
@@ -60,6 +104,7 @@ cargo shallguard check         # traceability gate</code></pre>
 
   <h2>Read more</h2>
   <ul>
+    <li><a href="https://github.com/shallguard/spec/blob/master/WHY.md">Why write requirements</a>: the page that the section above comes from</li>
     <li><a href="https://github.com/shallguard/shallguard-rs#readme">README and quick start</a></li>
     <li><a href="https://github.com/shallguard/shallguard-rs/blob/master/docs/USER_DOC.md">User guide</a></li>
     <li><a href="https://github.com/shallguard/shallguard-rs/blob/master/docs/MIGRATION.md">Migration guide for an existing codebase</a></li>
