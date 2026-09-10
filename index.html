@@ -247,6 +247,15 @@ cargo shallguard check          <span class="cm"># the traceability gate</span><
   know the rules that the check enforces.
   <a href="https://github.com/shallguard/shallguard-rs#ai-agent-skill">Options
   for one agent, a project, or another directory.</a></p>
+  <p>You can also install the skill as a plugin. The plugin comes from the
+  specification repository and is the same for every language. In Claude
+  Code, run:</p>
+  <pre class="cmd">/plugin marketplace add shallguard/spec
+/plugin install shallguard@shallguard</pre>
+  <p>Codex reads the same repository as a plugin marketplace.
+  <a href="https://github.com/shallguard/spec#the-skill-for-a-coding-agent">The
+  specification repository explains both agents.</a> Use the plugin or the
+  command, not both. Two copies give the agent the same rules twice.</p>
   <p>Rust today; the <a href="https://github.com/shallguard/spec">specification</a>
   defines what every future language implementation shares. An existing
   codebase adopts gradually: the baseline records historical gaps once and
