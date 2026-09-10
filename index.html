@@ -235,9 +235,18 @@ fn rejects_expired_token() { … }</pre>
 <section class="clause" id="start">
   <h2><span class="n">2</span>Start in five minutes</h2>
   <pre class="cmd">cargo install cargo-shallguard --locked
+cargo shallguard install-skill  <span class="cm"># teach your coding agent the workflow</span>
 
-cargo shallguard fmt --check   <span class="cm"># requirement-document format</span>
-cargo shallguard check         <span class="cm"># the traceability gate</span></pre>
+cargo shallguard fmt --check    <span class="cm"># requirement-document format</span>
+cargo shallguard check          <span class="cm"># the traceability gate</span></pre>
+  <p>The skill is the manual of ShallGuard for a coding agent. It holds the
+  requirements-first workflow, the anchor rules, and the evidence rules. The
+  command finds the agents on your machine and writes the skill for Claude
+  Code and for Codex. The agent loads it when it works in a repository with
+  a <code>shallguard.toml</code> file. Without the skill, the agent does not
+  know the rules that the check enforces.
+  <a href="https://github.com/shallguard/shallguard-rs#ai-agent-skill">Options
+  for one agent, a project, or another directory.</a></p>
   <p>Rust today; the <a href="https://github.com/shallguard/spec">specification</a>
   defines what every future language implementation shares. An existing
   codebase adopts gradually: the baseline records historical gaps once and
