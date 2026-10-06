@@ -260,12 +260,13 @@ cargo shallguard check          <span class="cm"># the traceability gate</span><
     with an agent in the loop.</li>
     <li>576 initial warnings ratcheted down to an empty baseline; every area
     now rejects new debt.</li>
-    <li>The migration found defects that a green test suite had hidden: an
-    authorization test that could not fail, an end-to-end test without its
-    core component, and mocks without assertions.</li>
+    <li>The migration found defects that a green test suite had hidden: tests
+    that could not fail, an end-to-end test that did not exercise the
+    component it claimed to test, and mocks without assertions.</li>
   </ul>
-  <p class="note">The workspace belongs to the author — read the numbers as a
-  best case, not an independent benchmark.
+  <p class="note">The workspace is a production system the author leads, and
+  the author wrote its specification — read the numbers as a best case, not
+  an independent benchmark.
   <a href="https://github.com/shallguard/shallguard-rs/blob/master/docs/MIGRATION.md">Full
   case study.</a></p>
 </section>
